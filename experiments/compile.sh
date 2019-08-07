@@ -1,0 +1,3 @@
+cd ..
+ant
+cd experiments

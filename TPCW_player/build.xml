@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="TPCWPlayer">
+	<property environment="env" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	<property name="requestPlayer.properties" value="etc/requestPlayer.properties"/>
+	<path id="TPCWPlayer.classpath">
+		<pathelement location="bin" />
+	</path>
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall" />
+	<target depends="build-subprojects,build-project" name="build" />
+	<target name="build-subprojects" />
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="TPCWPlayer.classpath" />
+		</javac>
+	</target>
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects" />
+
+	<target description="Create the jar file" name="create-jar" depends="build, manifest">
+		<delete file="bin/TPCW_request_player.jar" />
+		<manifest file="bin/META-INF/MANIFEST.MF" mode="update">
+		</manifest>
+		<jar jarfile="bin/TPCW_request_player.jar" basedir="bin" manifest="bin/META-INF/MANIFEST.MF">
+			<include name="**/*.*" />
+			<exclude name="src/**/*.*" />
+			<exclude name="ext/**/*.*" />
+			<exclude name="etc/**/*.*" />
+			<exclude name="traces/**/*.*" />
+			<exclude name="doc/**/*.*" />
+		</jar>
+	</target>
+
+	<target name="manifest">
+		<mkdir dir="bin/META-INF" />
+		<manifest file="bin/META-INF/MANIFEST.MF">
+			<attribute name="Implementation-Title" value="TPCW Request Player" />
+			<attribute name="Build-Jdk" value="${java.specification.version}" />
+		</manifest>
+	</target>
+
+	<target name="run-local" description="Launch the local Request Player">
+		<java classname="request_player.local.ClientServer" fork="true">
+			<classpath>
+				<pathelement location="ext/derby.jar" />
+				<pathelement location="ext/h2-1.2.140.jar" />
+				<pathelement location="bin/TPCW_request_player.jar" />
+			</classpath>
+			<jvmarg line="-Xmx4096m -Xms4096m" />
+			<arg line="${requestPlayer.properties}" />
+		</java>
+	</target>
+
+	<target name="run-remote-server" description="Launch the Request Player Server">
+		<java classname="request_player.remote.Server" fork="true">
+			<classpath>
+				<pathelement location="ext/derby.jar" />
+				<pathelement location="ext/h2-1.2.140.jar" />
+				<pathelement location="bin/TPCW_request_player.jar" />
+				<pathelement location="etc" />
+			</classpath>
+			<jvmarg line="-Xmx4096m -Xms4096m" />
+			<arg line="${requestPlayer.properties}" />
+		</java>
+	</target>
+
+	<target name="run-remote-client" description="Launch the Request Player Client">
+		<java classname="request_player.remote.Client" fork="true">
+			<classpath>
+				<pathelement location="bin/TPCW_request_player.jar" />
+				<pathelement location="etc" />
+			</classpath>
+			<jvmarg line="-Xmx1024m -Xms1024m" />
+			<arg line="${requestPlayer.properties}" />
+		</java>
+	</target>
+</project>

@@ -1,0 +1,12 @@
+// $Id$
+Implementation of the server side shim.
+
+
+TBD
+
+12/30 (AGC):  Need to refine the token and state interfaces to be useful.
+
+ChangeLog
+
+12/30 (AGC):  Added ServerShimInterface and GlueShimInterface.
+

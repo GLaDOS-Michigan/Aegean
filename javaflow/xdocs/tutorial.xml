@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Tutorial</title>
+    <author email="dev@commons.apache.org">Commons Documentation Team</author>
+    <revision>$Id: downloads.xml 155451 2005-02-26 13:22:47Z dirkv $</revision>
+  </properties>
+  <body>
+  <section name="Tutorial">
+    <p>
+      This document shows the basic usage of the javaflow API.
+    </p>
+    <p>
+      First, consider the following program:
+    </p>
+<source>
+class MyRunnable implements Runnable {
+  public void run() {
+    System.out.println("started!");
+    for( int i=0; i&lt;10; i++ )
+      echo(i);
+  }
+  private void echo(int x) {
+    System.out.println(x);
+    Continuation.suspend();
+  }
+}
+
+Continuation c = Continuation.startWith(new MyRunnable());
+System.out.println("returned a continuation");
+</source>
+    <p>
+      When the <tt>startWith</tt> method is invoked, Javaflow sets up the "environment", then invoke the run method of the object it received. It's not very important for users to know what this environment is, but that is what enables all the magics we'll see in this document.
+    </p>
+    <p>
+      As a result of this, you'll see the "started!" message printed in the console. The thread then goes into a for loop, calls the echo method, prints "0", then calls the <tt>Continuation.suspend()</tt>.
+    </p>
+    <p>
+      This is where an interesting thing happens. In this method, the stack frames that are leading up to the Continuation.suspend() and all local variables are captured into a <tt>Continuation</tt> object, and then the execution resumes by returning from the <tt>startWith</tt> method (instead of returning from the <tt>suspend</tt> method.) So the next message you'll see on the console is "returned a continuation". This all happens by using just one thread.
+    </p>
+    <p>
+      You can then do something else, and eventually you'll do the following:
+    </p>
+<source>
+Continuation d = Continuation.continueWith(c);
+System.out.println("returned another continuation");
+</source>
+    <p>
+      When the <tt>continueWith</tt> method is invoked, javaflow sets up the environment again, and restores stack frames and local variables. Instead of returning from the <tt>continueWith</tt> method, the execution resumes by returning from the <tt>suspend</tt> method that never returned before.
+    </p>
+    <p>
+      Now what happens? The echo method returns, then you'll go another iteration of the for loop. So the next message you'll see is "1". Then, the <tt>suspend</tt> method is called again.
+    </p>
+    <p>
+      At this point, the stack frames and the local variables are captured into a new <tt>Continuation</tt> object, and then the execution resumes by returning from the <tt>continueWith</tt> method. So the next message you'll see is "returned another continuation".
+    </p>
+    <p>
+      If you think of two threads, the execution flow so far would be probably easier to understand, although with javaflow all of this happens in one thread. We can repeatedly continue the returned <tt>Continuation</tt> object so that it will print 2,3,...,9 as shown in the following code:
+    </p>
+<source>
+while(d!=null) {
+  d = Continuation.continueWith(d);
+}
+</source>
+    <p>
+      Eventually, the for loop exits and the <tt>run</tt> method returns. At that point, there's nothing left to execute. So the <tt>continueWith</tt> method returns <tt>null</tt>.
+    </p>
+  </section>
+  <section name="Wait, But There's More!">
+    <p>
+      Now, so far the things we did can be easily done if you are to use two threads. So let's do something more interesting. Remember the 'c' object we captured earlier? We've already continued it once, but we can do it again:
+    </p>
+<source>
+Continuation.continueWith(c);
+</source>
+    <p>
+      This restores the stack frames and local variables captured in 'c'. Then the execution resumes by returning from the <tt>suspend</tt> method. When 'c' was captured, the value of 'i' was 0. So the next number you'll see printed is "1". Then it executes <tt>suspend</tt> method, then the execution returns from the <tt>continueWith</tt> method.
+    </p>
+    <p>
+      Isn't this interesting? In a way, we went back the time and re-run the same code again. The <tt>continueWith</tt> method doesn't have to be invoked from the same method.
+    </p>
+    <p>
+      A <tt>Continuation</tt> can be serialized if all objects it captured is also serializable. In other words, all the local variables (including all <tt>this</tt> objects) need to be marked as <tt>Serializable</tt>. In this example, you need to mark the <tt>MyRunnable</tt> class as <tt>Serializable</tt>. A serialized continuation can be sent over to another machine or used later.
+    </p>
+  </section>
+  <section name="Preparation">
+    <p>
+      For these to work, javaflow needs to enhance the byte code of your program that runs inside the continuation-enabled environment. When the <tt>Continuation.suspend</tt> runs, all the methods on the stack frames (down to <tt>Continuation.startWith</tt> or <tt>Continuation.continueWith</tt>) need to be enhanced.
+    </p>
+    <p>
+      There are two ways to instrument bytecode. One way is to do it statically. This means using <a href="antTask.html">the javaflow Ant task</a> as a part of your build process, to enhance the classes that run inside continuation-enabled environment. Since the byte-code enhancement increases the class file size and slow down the execution, you might want to consider avoiding unnecessary class files enhancement.
+    </p>
+    <p>
+      Alternatively, you can do this dynamically at runtime, by using javaflow's <tt>ContinuationClassLoader</tt>. This works like a <tt>URLClassLoader</tt> with the byte-code enhancement. To use this, you need to separate your application into two parts; one for classes that don't need enhancement, and the other that do need enhancement. You can then configure the first portion to be loaded by the system class loader, and then load the second portion by a <tt>ContinuationClassLoader</tt>. The following code shows how to do this:
+    </p>
+<source>
+// this class lives in the system class loader
+public class Foo {
+  public static void main(String[] args) {
+    ClassLoader cl = new ContinuationClassLoader(
+      new URL[]{new URL("latter.jar")},
+      Foo.class.getClassLoader()); // parent class loader
+    cl.loadClass(...);
+  }
+}
+</source>
+      
+      <!-- One is <tt>ContinuationClassLoader</tt>, which locates class files by using its ancestor class loaders, and then loads it after the enhancement. This is convenient for a simple Java SE application, where all the application classes are available in the default class loader. The following code illustrates how to set up a <tt>ContinuationClassLoader</tt>.
+    </p>
+<source>
+</source>
+    <p>
+      The downside of this approach is that this model goes against the default class loader delegation model, and therefore classes of the same name are always available from two ClassLoaders. You need to carefully think what class is loaded from where, or you'll get mysterious <tt>ClassCastException</tt>, or some strange behavior when you suspend, etc.
+    </p-->
+  </section>
+  </body>
+</document>

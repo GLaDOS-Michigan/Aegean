@@ -1,0 +1,26 @@
+<projectDescription>
+  <name>commons-javaflow</name>
+  <comment>The Apache Software Foundation provides support for the Apache community of open-source software projects.
+    The Apache projects are characterized by a collaborative, consensus based development process, an open and
+    pragmatic software license, and a desire to create high quality software that leads the way in its field.
+    We consider ourselves not simply a group of projects sharing a server, but rather a community of developers
+    and users. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects/>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+      <arguments>
+        <dictionary>
+          <key>LaunchConfigHandle</key>
+          <value>&lt;project&gt;/.externalToolBuilders/Maven_Ant_Builder.launch</value>
+        </dictionary>
+      </arguments>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

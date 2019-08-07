@@ -1,0 +1,27 @@
+SET CLUSTER '';
+SET DEFAULT_TABLE_TYPE 0;      
+SET WRITE_DELAY 500;           
+SET DEFAULT_LOCK_TIMEOUT 2000; 
+SET MAX_MEMORY_ROWS 100;       
+SET CACHE_SIZE 0;              
+SET MAX_MEMORY_UNDO 3;         
+;              
+CREATE USER IF NOT EXISTS SA SALT 'd1facc1f639e694c' HASH '8d36a977e7afb961409522bd4cb18a01014ce05f32b8d812e85ac5d308f0fda4' ADMIN;            
+CREATE CACHED TABLE PUBLIC.TEST(
+    ID INT NOT NULL,
+    DATA CLOB
+);         
+-- 1 +/- SELECT COUNT(*) FROM PUBLIC.TEST;     
+CREATE TABLE IF NOT EXISTS SYSTEM_LOB_STREAM(ID INT NOT NULL, PART INT NOT NULL, CDATA VARCHAR, BDATA BINARY); 
+CREATE PRIMARY KEY SYSTEM_LOB_STREAM_PRIMARY_KEY ON SYSTEM_LOB_STREAM(ID, PART);               
+CREATE ALIAS IF NOT EXISTS SYSTEM_COMBINE_CLOB FOR "org.h2.command.dml.ScriptCommand.combineClob";             
+CREATE ALIAS IF NOT EXISTS SYSTEM_COMBINE_BLOB FOR "org.h2.command.dml.ScriptCommand.combineBlob";             
+INSERT INTO SYSTEM_LOB_STREAM VALUES(0, 0, '                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ', NULL);          
+INSERT INTO SYSTEM_LOB_STREAM VALUES(0, 1, '    ', NULL);      
+INSERT INTO PUBLIC.TEST(ID, DATA) VALUES
+(1, SYSTEM_COMBINE_CLOB(0));          
+CREATE PRIMARY KEY PUBLIC.PRIMARY_KEY_E ON PUBLIC.TEST(ID);    
+DROP TABLE IF EXISTS SYSTEM_LOB_STREAM;        
+CALL SYSTEM_COMBINE_BLOB(-1);  
+DROP ALIAS IF EXISTS SYSTEM_COMBINE_CLOB;      
+DROP ALIAS IF EXISTS SYSTEM_COMBINE_BLOB;      

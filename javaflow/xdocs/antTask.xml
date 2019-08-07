@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Ant Task</title>
+    <author email="dev@commons.apache.org">Commons Documentation Team</author>
+    <revision>$Id: downloads.xml 155451 2005-02-26 13:22:47Z dirkv $</revision>
+  </properties>
+  <body>
+    <section name="Introduction">
+      <p>
+        <tt>commons-javaflow.jar</tt> contains an Ant task implementation that instruments class files for javaflow. To use this task in your build script, first declare it as follows:
+      </p>
+<source><![CDATA[
+<taskdef name="javaflow"
+  classname="org.apache.commons.javaflow.ant.AntRewriteTask">
+  <classpath>
+    ...
+  </classpath>
+</taskdef>
+]]></source>
+    </section>
+    <section name="Synopsis">
+      <p>
+        The <tt>javaflow</tt> task forms an implicit <a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a> and supports all attributes of &lt;fileset> (dir becomes srcdir) as well as the nested &lt;include>, &lt;exclude> and &lt;patternset> elements.
+      </p>
+      <subsection name="Parameter attributes">
+        <table>
+          <thead>
+            <tr>
+              <td>Attribute</td>
+              <td>Description</td>
+              <td>Required?</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>srcdir</td>
+              <td>directory from which the instrumented class files will be read. This is used as the base directory for the implicit <a href="http://ant.apache.org/manual/CoreTypes/fileset.html">FileSet</a> that the <tt>javaflow</tt> task forms.</td>
+              <td>yes</td>
+            </tr>
+            <tr>
+              <td>dstdir</td>
+              <td>directory to which the instrumented class files will be placed. This can be the same directory as the source directory.</td>
+              <td>yes</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          When srcdir==dstdir, class files are touched only when they are not yet instrumented.
+        </p>
+      </subsection>
+    </section>
+    <section name="Examples">
+<source><![CDATA[
+<javaflow srcdir="build/classes" dstdir="build/classes">
+  <include name="**/*.class" />
+</javaflow>
+]]></source>
+      <p>
+        Instrument all the class files in the <tt>build/classes</tt> directory in-place.
+      </p>
+    </section>
+  </body>
+</document>

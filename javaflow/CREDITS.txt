@@ -1,0 +1,12 @@
+C R E D I T S
+
+This file is meant to provide the deserved visibility
+for major efforts or donation to the javaflow project.
+
+The initial idea of using bytecode transformation for
+implementing a portable execution state serialization
+and migration mechanism was borrowed from the discontinued
+Brakes research project. The javaflow project would like
+to thank the Brakes team for their efforts in this space.
+
+http://people.cs.kuleuven.be/~eddy.truyen/BRAKES/brakes.html

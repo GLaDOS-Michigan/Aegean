@@ -1,0 +1,1 @@
+java -Djava.library.path=BFT/fork -cp bin BFT.fork.Forker

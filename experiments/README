@@ -1,0 +1,14 @@
+modified_super.py -> for microbenchmark in Parallel(p) or PipelinedParallel(pp) mode
+pipelinedSequential_super.py -> for microbenchmark in sequential(s) or pipelinedSequential(ps) mode
+super_script_tpcw.py -> for tpc-w benchmark. It can be used for p and pp mode because it currently uses corresponding classes
+                     like ExecBaseNode and VerifierBaseNode. However, it does not modify the related parameters like first
+                     two scripts so the parameters should be set properly in test.properties and test.properties.backend
+sequential_super_tpcw.py -> for tpc-w benchmark. It can be used for s and ps mode because it currently uses corresponding classes
+                     like OrderBaseNode. However, it does not modify the related parameters like first
+                     two scripts so the parameters should be set properly in testSeq.properties and testSeq.properties.backend
+
+basicRun.sh -> simple run in p mode from 1 client to 4 clients
+compileAndBasicRun.sh -> compiles before simple run
+sequentialBasicRun.sh -> simple run in s mode from 1 client to 4 clients
+sequentialBasicRunCompile.sh -> compiles before simple sequential run
+tpcwCompileAndRun.sh -> compiles before calling super_script_tpcw.py

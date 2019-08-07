@@ -1,0 +1,28 @@
+h2_browsing.log
++++++++++++++++++
+
+Datbase: H2
+Mix: browsing mix
+95% browse interactions, 5% order interactions
+Number of transactions: 47893
+Number of commits: 47893
+Number of rollbacks: 0
+Number of errors: 0
+Number of requests: 53901
+Number of read requests: 50749
+Number of write requests: 3152
+
+
+h2_shopping.log
++++++++++++++++++
+
+Datbase: H2
+Mix: shopping mix
+80% browse interactions, 20% order interactions
+Number of transactions: 55268
+Number of commits: 55268
+Number of rollbacks: 0
+Number of errors: 0
+Number of requests: 73881
+Number of read requests: 63837
+Number of write requests: 10044

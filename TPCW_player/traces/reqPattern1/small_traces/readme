@@ -1,0 +1,13 @@
+h2_ordering.log
++++++++++++++++++
+
+Datbase: H2
+Mix: ordering mix
+50% browse interactions, 50% order interactions
+Number of transactions: 12624
+Number of commits: 12624
+Number of rollbacks: 0
+Number of errors: 0
+Number of requests: 14171
+Number of read requests: 13354
+Number of write requests: 817

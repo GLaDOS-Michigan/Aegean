@@ -1,0 +1,20 @@
+Life Cycle of a Rollback
+
+Should start with a verification message
+1. In ExecBaseNode.java, the VerificationResponseMessage (from the verifiers?) is processed 
+	You can see what the last requested verify was, 
+	line 1314 in ExecBaseNode
+Note that a rollback is needed
+	If primary, and sense a divergence in digests - send a PBRollbackMessage
+	Do we know that seqNo - 1 is the last stable/committed state? (line 1310)
+Notify everyone that we're rolling back to last stable state? 
+
+Rollback
+	Grab stuff from Merkle - 
+	MerkleTreeInstance.get().rollBack(glue.getMerkleTreeVersionLinkedWithRequestNo(startSeqNo));
+	MerkleTree.rollBack() - what is happening? who knows
+
+Execute all messages sequentially
+	reExecute - method @ line 1373
+	
+Resume parallel execution - Not really a problem for pipebatch since reExecute never changes the mode of execution 

@@ -1,0 +1,73 @@
+<project name="ftinst" basedir="." default="main">
+
+    <property name="src.dir" value="."/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir" value="${build.dir}/jar"/>
+
+    <property name="main-class" value="mantis.ftinst.FeatureInstrumentor"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="input.dir" value="inputFiles"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <path id="inputfiles">
+        <fileset dir="${input.dir}" includes="**/*.java"/>
+    </path>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete file="ftinst.jar"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" debug="on"
+               debuglevel="lines,vars,source">
+            <exclude name="**/output/**"/>
+            <exclude name="**/sampleDir/**"/>
+            <exclude name="**/org/**"/>
+            <exclude name="**/sampleDir2/**"/>
+            <exclude name="**/sampleDir_instrumented/*.java"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <copy todir="${classes.dir}">
+            <fileset dir=".">
+                <include name="mantis_classes_skeletons/**/*.java"/>
+            </fileset>
+        </copy>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+            </manifest>
+        </jar>
+        <copy file="${jar.dir}/${ant.project.name}.jar" tofile="./${ant.project.name}.jar"/>
+    </target>
+
+
+    <target name="testrun" depends="jar">
+        <java fork="true" classname="${main-class}">
+            <arg line="--outputdir test_output"/>
+            <arg line="--mainclass TestFile"/>
+            <arg line="--srcdir inputFiles"/>
+            <arg pathref="inputfiles"/>
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${jar.dir}/${ant.project.name}.jar"/>
+            </classpath>
+        </java>
+    </target>
+
+
+    <target name="clean-build" depends="clean,jar"/>
+
+    <target name="main" depends="clean,jar"/>
+
+
+</project>

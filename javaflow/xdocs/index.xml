@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Overview</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+
+<section name="The Javaflow Component">
+
+<p>
+   Sometimes it is usefull if we can capture the state of the application, its 
+   stack of function calls, which includes local variables, the global variables 
+   and the program counter, and save them into an object. If this object would 
+   give us the ability to restart the processing from the point stored in it.
+</p>
+<p>
+   A continuation is exactly the type of object that we need. Think of a 
+   continuation as an object that, for a given point in your program, contains
+   a snapshot of the stack trace, including all the local variables, and the 
+   program counter. You can not only store these things in the continuation 
+   object, but also restore the execution of the program from a continuation 
+   object. This means that the stack trace and the program counter of the 
+   running program become the ones stored in a continuation.
+</p>
+<p>
+   Continuations are powerful concepts from the world of functional languages,
+   like Scheme, but they are becoming popular in other languages as well.
+</p>
+
+</section>
+
+<section name="Releases">
+    <p>
+       See the <a href="downloads.html">downloads</a> page for information on obtaining releases.
+    </p>
+</section>
+
+<section name="Documentation">
+  <p>
+     Starts with <a href="tutorial.html">the tutorial</a>.
+     The <a href="apidocs/index.html">JavaDoc API documents</a> are also available.
+  </p>
+</section>
+
+</body>
+</document>

@@ -1,0 +1,8 @@
+Implementation of the order node.
+
+It is based on a primary centric agreement protocol.
+
+Big complaints atm
+9/1/22:  need view changes
+	 need to consolidate processing of messages.
+	 handling async nature of app checkpoints is not good atm

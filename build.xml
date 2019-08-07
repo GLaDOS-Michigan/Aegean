@@ -1,0 +1,215 @@
+<project name="bft" default="dist" basedir=".">
+    <description>
+        simple example build file
+    </description>
+  <!-- set global properties for this build -->
+  <property name="bft" location="src/BFT"/>
+  <property name="merkle" location="src/merkle"/>
+  <property name="merklePB" location="src/merklePB"/>
+  <property name="merklePB2" location="src/merklePB2"/>
+  <property name="echo" location="src/Applications/echo"/>
+  <property name="bench" location="src/Applications/benchmark"/>
+  <property name="h2bench" location="src/Applications/h2bench"/>
+  <property name="tpcw" location="src/Applications/tpcw_ev"/>
+  <property name="tpcw_new" location="src/Applications/tpcw_new"/>
+  <property name="web" location="src/Applications/web"/>
+  <property name="merkle_test" location="test/merkle"/>
+  <property name="util" location="src/util"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="BCI"  location="src/BCI"/>
+  <property name="tpcw_servlet"  location="src/Applications/tpcw_servlet"/>
+  <property name="tpcw_webserver" location="src/Applications/tpcw_webserver"/>
+  <property name="jetty_eve" location="src/Applications/jetty"/>
+  <property name="continuation"  location="src/continuation"/>
+
+  <path id="classpath">
+    <fileset dir="lib/">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+<!--  <path id="compile.boot.path">
+!-    <fileset dir="/lusr/java6/jre/lib">-
+    <fileset dir="./jikesrvm/dist/production_ia32-linux"> 
+      <include name="*.jar"/>
+    </fileset>
+  </path>-->
+
+  <target name="init">
+    <!-- Create the time stamp --> <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="javaflow">
+    <exec executable="mvn" dir="javaflow">
+      <arg value="install"/>
+    </exec>
+    <exec executable="cp">
+      <arg value="javaflow/target/commons-javaflow-2.0-SNAPSHOT.jar"/>
+      <arg value="lib/"/>
+    </exec>
+  </target>
+
+  <target name="compile" depends="init,javaflow"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <!-- <javac srcdir="${util};${bft};${merklePB2};${merkle_test};${echo};${bench};${h2bench};${tpcw};${tpcw_new};${web};${BCI}" destdir="${build}" -->
+    <javac target="1.7" srcdir="${util};${bft};${merkle};${echo};${bench};${h2bench};${BCI};${continuation};${jetty_eve};${tpcw};${tpcw_servlet};${tpcw_webserver};${tpcw_new}" destdir="${build}"
+	debug="true" debuglevel="lines,vars,source">
+      <classpath refid="classpath"/>
+      <compilerarg line="-Xmaxerrs 1000"/>
+    </javac>
+  </target>
+
+  <target name="instrument" depends="compile"
+	description="Instrument some class files">
+    <java classname="BCI.InstrumentClass" fork="true">
+	<arg value="Applications.benchmark.BenchServer"/>
+	<classpath>
+	  <pathelement path="build;lib/javassist.jar"/>
+	</classpath>
+    </java> 
+  </target>
+
+  <target name="cont-instrument" depends="compile"
+    description="Instrument classes with continuation">
+    <fileset id="classListToInstrument" dir="${build}">
+      <include name="**/GeneralGlue.class" />
+      <include name="**/GeneralGlue$TestHandler.class" />
+      <include name="**/ExecBaseNode.class" />
+      <include name="**/BenchServer.class" />
+      <!--<include name="**/GlueThread.class" />-->
+      <include name="**/BatchManager.class" />
+      <!--<include name="**/MerkleTreeThread.class" />-->
+      <include name="**/PipelinedGroupManager.class" />
+      <include name="**/ParallelPipelineManager.class" />
+      <include name="**/CRGlueThread.class" />
+      <include name="**/CRWrapper.class" />
+      <include name="**/TestRunnable.class" />
+      <include name="**/InstrumentationTest.class" />
+      <include name="**/JettyEveConnector.class" />
+      <include name="**/JettyEveTask.class" />
+      <include name="**/TPCW_Database.class" />
+      <include name="**/TPCW_admin_request_servlet.class" />
+      <include name="**/TPCW_admin_response_servlet.class" />
+      <include name="**/TPCW_best_sellers_servlet.class" />
+      <include name="**/TPCW_buy_confirm_servlet.class" />
+      <include name="**/TPCW_buy_request_servlet.class" />
+      <include name="**/TPCW_customer_registration_servlet.class" />
+      <include name="**/TPCW_execute_search.class" />
+      <include name="**/TPCW_home_interaction.class" />
+      <include name="**/TPCW_new_products_servlet.class" />
+      <include name="**/TPCW_order_display_servlet.class" />
+      <include name="**/TPCW_product_detail_servlet.class" />
+      <include name="**/TPCW_promotional_processing.class" />
+      <include name="**/TPCW_say_hello.class" />
+      <include name="**/TPCW_search_request_servlet.class" />
+      <include name="**/TPCW_shopping_cart_interaction.class" />
+      <!--<include name="**/InstrumentationPerformance.class" />-->
+    </fileset>
+    <pathconvert property="toInstrument" refid="classListToInstrument" pathsep=":">
+      <map from="${build}" to="" />
+    </pathconvert>
+    <java classname="continuation.instrument.Instrument" fork="true" >
+      <classpath>
+        <pathelement path="${build}" />
+        <fileset dir="lib" includes="**/*.jar" />
+      </classpath>
+      <arg value="-src=${build}" />
+      <arg value="-dst=${build}" />
+      <arg value="-classFiles=${toInstrument}" />
+    </java>
+  </target>
+
+  <target name="cont-merkle-test" depends="dist" description="test merkle tree works with stack." >
+    <java fork="true" classname="continuation.merkle.ContinuationMerkleTreeTest">
+      <classpath>
+        <fileset dir="lib" includes="**/*.jar" />
+        <pathelement path="./build/" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="cont-test" depends="dist" description="test classes are correctly instrumented." >
+    <java fork="true" classname="continuation.instrument.InstrumentationTest">
+      <classpath>
+        <fileset dir="lib" includes="**/*.jar" />
+        <pathelement path="./build/" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="cont-perform-test" depends="dist" description="test instrumenated classes' performance." >
+    <java fork="true" classname="continuation.instrument.InstrumentationPerformance">
+      <classpath>
+        <fileset dir="lib" includes="**/*.jar" />
+        <pathelement path="./build/" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="dist" depends="cont-instrument"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/lib/bft.jar" basedir="${build}" />
+    <!-- Copying the jar file to lib directory of hdfs -->
+
+     <copy file="${dist}/lib/bft.jar" todir="simple_test" />
+     <copy file="${dist}/lib/bft.jar" todir="../echoMT_test" />
+     <copy file="${dist}/lib/bft.jar" todir="../osdi10_test" />
+  </target>
+
+  <target name="test" depends="compile,dist"
+        description="run junit test " >
+    <junit printsummary="yes" fork="yes" haltonfailure="yes" showoutput="yes">
+      <formatter type="plain"/>
+	
+       <classpath>
+            <pathelement path="./dist/lib/bft.jar:./lib/junit-4.4.jar" />
+      </classpath>
+      <test name="merkle.TestTools"/>
+      <test name="merkle.TestMerkleTreePB"/>
+      <!--<test name="merkle.TestMTCollectionWrapper"/>
+      <test name="merkle.TestMTMapWrapper"/>
+      <test name="merkle.TestEncapsulatedData"/>
+      <test name="merkle.TestMTArrayWrapper"/>-->
+    </junit>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="justjar"
+        description="generate the jarfile" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/lib/bft.jar" basedir="${build}"/>
+    <!-- Copying the jar file to lib directory of hdfs -->
+     <copy file="${dist}/lib/bft.jar" todir="simple_test" />
+
+  </target>
+
+  <target name="BCI" depends="compile"
+        description="generate the BCI jarfile" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Put everything in ${build/BCI} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/lib/BCI.jar" basedir="${build}/BCI"/>
+    <!-- Copying the jar file to lib directory of hdfs -->
+  </target>
+
+
+</project>
+

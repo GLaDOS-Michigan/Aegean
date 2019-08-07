@@ -1,0 +1,44 @@
+========== SQL Request Player ==========
+
+
+===== Organization =====
+
+request_player: some useful classes for both the statements_player and the functions_player.
+
+request_player.local.ClientServer: the request player which embeds the server and the client in the same JVM.
+
+request_player.remote.Server and request_player.remote.Client: the request player where the clients and the server are not necessarily on the same machine.
+
+etc/requestPlayer.properties: this file contains the properties that have to be defined when launching the Request Player.
+Another file can be used instead of the standard one (its name must be given as an argument when launching the program)
+
+
+===== How to compile =====
+
+Use ant and the build.xml file which is provided:
+   $ ant build
+Then you can create the jar file, which will be located in the bin/ directory:
+   $ ant create-jar
+
+
+===== How to launch =====
+
+To launch the request player you can use the ant file.
+
+There are two configurations: 
+- you can run the DB and the TPCW client locally on the same machine. For that configuration, use: 
+   * ant run-local
+- you can run the DB and the TPCW client on different machines. For that configuration, use:
+   * ant run-remote-server to launch the server (wait for the following line to be displayed: "Server is ready to accept connections...")
+   * ant run-remote-client to launch the client
+	
+
+===== Configuring the properties file =====
+
+1) By default, the used port is 4242 (as a reference to "The Hitchhiker's Guide to the Galaxy" answer to the Ultimate question of Life, the Universe and Everything, from Douglas Adams).
+
+2) isolationLevel is (for now) only used with Derby.
+
+3) There are 2 requests patterns: one with a new field containing either the SHOPPING_ID if any, or -1 otherwise.
+To use the "old" pattern, set request_pattern_version to 0. Otherwise set it to 1.
+

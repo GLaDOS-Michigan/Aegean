@@ -1,0 +1,32 @@
+/*****************************
+ * $Id: README 411 2010-06-12 00:25:29Z glc $ *
+ *****************************/
+How to run the echo application.
+
+1. Compile the code: From the base directory, simply launch ant. It creates
+a "build" directory.
+2. cd build
+3. Create 4 one-line files, named "orders", "filters", "clients", and "execs".
+The "filters" file is needed if during the configuration creation (see 4.) the
+"insecure" option is set to false. Each file contains the line "localhost",
+with no quotes.
+4. Run (from the build dir):
+java -cp ../simple_test/bft.jar:<other jar files in simple_test> \
+	BFT.membership.MembershipGenerator
+This interactively creates a configuration file ("test.properties" is the
+default name).
+5. Start the filter (if you chose insecure=false), then the order, then the
+exec (the starting sequence between exec and order can be reversed), then the
+client.
+To run filter and order, do:
+java -cp<as before> BFT.filter.FilterBaseNode <options>
+java -cp<as before> BFT.order.OrderBaseNode <options>
+
+To run server and client, do:
+java -cp<see before> Applications.echo.EchoServer <options>
+java -cp<see before> Applications.echo.EchoClient <options>
+
+5. To run the C echo client, go in the corresponding dir
+(BFT-c99/echo_client), do `make', then launch:
+./testEchoClient
+to get the usage help.

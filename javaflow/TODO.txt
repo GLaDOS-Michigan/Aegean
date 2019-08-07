@@ -1,0 +1,11 @@
+Must:
+o testcases!!!!
+o documentation of the rewriting process
+o fix the maven build so the test suites run properly (some classloader issues)
+
+Maybe:
+o integrate just4log into the build system
+o only wrap the function calls that may lead to a suspend (control flow analysis) requires 2-pass analysing/rewriting
+o evaluate making the Stack class use a hierarchical approach to support differential continuations
+o talk to the RIFE guys about joining forces
+o talk to the aspectwerkz and aspectj folks about working together

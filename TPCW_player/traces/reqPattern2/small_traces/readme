@@ -1,0 +1,34 @@
+h2_browsing.log
++++++++++++++++++
+
+Datbase: H2
+Mix: browsing mix
+95% browse interactions, 5% order interactions
+NUM_EBS=20
+NUM_ITEMS=10000
+nb_clients=100
+Number of transactions: 1566
+Number of commits: 1566
+Number of rollbacks: 0
+Number of errors: 0
+Number of requests: 1697
+Number of read requests: 1626
+Number of write requests: 71
+
+
+h2_ordering.log
++++++++++++++++++
+
+Datbase: H2
+Mix: ordering mix
+50% browse interactions, 50% order interactions
+NUM_EBS=20
+NUM_ITEMS=10000
+nb_clients=100
+Number of transactions: 2157
+Number of commits: 2157
+Number of rollbacks: 0
+Number of errors: 0
+Number of requests: 4520
+Number of read requests: 3221
+Number of write requests: 1299

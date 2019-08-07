@@ -1,0 +1,31 @@
+Implementation of the messages used to communicate between nodes
+
+
+TBD
+
+
+changelog: 
+
+1/6 (AGC):    Move verification to the end, expanded Request
+    	      to request and requestCore
+
+1/3   (AGC):  NextBatch + some auxiliary classes
+
+1/2   (AGC):  Full implementations for
+      	      Request
+	      Retransmit
+	      LoadCPMessage
+	      ReleaseCP
+	      CPTokenMessage
+	      LastExecuted
+	      Reply
+
+12/30 (AGC):  Added stubs for the intra-node messages
+      	      CPTokenMessage
+	      LastExecuted
+	      LoadCPMessage
+	      NextBatch
+	      ReleaseCP
+	      Reply
+	      Request
+	      Retransmit
